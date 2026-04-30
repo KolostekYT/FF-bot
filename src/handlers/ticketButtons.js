@@ -135,10 +135,10 @@ const createTicketHandler = {
 
       const reasonInput = new TextInputBuilder()
         .setCustomId('reason')
-        .setLabel('Why are you creating this ticket?')
+        .setLabel('Informacje o tobię!')
         .setStyle(TextInputStyle.Paragraph)
-        .setPlaceholder('Describe your issue...')
-        .setRequired(true)
+        .setPlaceholder('Imię - (Twoje imię) \n Wiek -(Twój wiek) \n Dlaczego akurat my? - (twoja odpowiedź)')
+        .setRequired(false)
         .setMaxLength(1000);
 
       const actionRow = new ActionRowBuilder().addComponents(reasonInput);
