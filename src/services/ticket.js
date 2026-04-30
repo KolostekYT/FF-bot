@@ -161,7 +161,7 @@ export async function createTicket(guild, member, categoryId = priority = 'none'
     
     const embed = createEmbed({
       title: `Ticket #${ticketNumber}`,
-      description: `${member.toString()}, Dziękujemy za stworzenie aplikacji! Aby aplikawać wypełnij te informację = Imię - (twoje Imię) Wiek - (twój aktualny wiek) od kiedy grasz - (ss ze steama ile masz h w albionie) fame - (ss z albiona ile masz fame) Dlaczego postanowiłeś do nas aplikować - (twój powód do aplikacji do nas) \n**Priority:** ${priorityInfo.emoji} ${priorityInfo.label}`,
+      description: `${member.toString()}, Dziękujemy za stworzenie aplikacji! Aby aplikawać wypełnij te informację = \nImię - (twoje Imię) Wiek - (twój aktualny wiek) od kiedy grasz - (ss ze steama ile masz h w albionie) fame - (ss z albiona ile masz fame) Dlaczego postanowiłeś do nas aplikować - (twój powód do aplikacji do nas) \n**Priority:** ${priorityInfo.emoji} ${priorityInfo.label}`,
       color: priorityInfo.color,
       fields: [
         { name: 'Status', value: '🟢 Open', inline: true },
