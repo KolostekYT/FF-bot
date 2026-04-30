@@ -162,29 +162,29 @@ export async function createTicket(guild, member, categoryId, reason = 'No reaso
     
     const embed = createEmbed({
       title: `Ticket #${ticketNumber}`,
-      description: `${member.toString()}, Dziękujemy za stworzenie Aplikacji do FrostFang! (doślij jeszcze ss z godzin w grze na steam, oraz ss z fame w grze) \n\n**Reason:** ${reason}\n**Priority:** ${priorityInfo.emoji} ${priorityInfo.label}`,
+      description: `${member.toString()}, Dziękujemy za stworzenie Aplikacji do FrostFang! (doślij jeszcze ss z godzin w grze na steam, oraz ss z fame w grze) \n\n**Informacje o aplikancie:** ${reason}\n**Priorytet:** ${priorityInfo.emoji} ${priorityInfo.label}`,
       color: priorityInfo.color,
       fields: [
-        { name: 'Status', value: '🟢 Open', inline: true },
-        { name: 'Claimed By', value: 'Not claimed', inline: true },
-        { name: 'Created', value: `<t:${Math.floor(Date.now() / 1000)}:R>`, inline: true },
+        { name: 'Status', value: '🟢 Otwarty', inline: true },
+        { name: 'Perzejęty przez', value: 'Brak', inline: true },
+        { name: 'Stworzony', value: `<t:${Math.floor(Date.now() / 1000)}:R>`, inline: true },
       ],
     });
     
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId('ticket_close')
-        .setLabel('Close Ticket')
+        .setLabel('Zamknij Ticket')
         .setStyle(ButtonStyle.Danger)
         .setEmoji('🔒'),
       new ButtonBuilder()
         .setCustomId('ticket_claim')
-        .setLabel('Claim')
+        .setLabel('Przejmij')
         .setStyle(ButtonStyle.Primary)
         .setEmoji('🙋'),
       new ButtonBuilder()
         .setCustomId('ticket_pin')
-        .setLabel('Pin')
+        .setLabel('Przypnij')
         .setStyle(ButtonStyle.Secondary)
         .setEmoji('📌')
     );
@@ -193,12 +193,12 @@ export async function createTicket(guild, member, categoryId, reason = 'No reaso
       row.addComponents(
         new ButtonBuilder()
           .setCustomId('ticket_priority:low')
-          .setLabel('Low')
+          .setLabel('Niski')
           .setStyle(ButtonStyle.Secondary)
           .setEmoji('🔵'),
         new ButtonBuilder()
           .setCustomId('ticket_priority:high')
-          .setLabel('High')
+          .setLabel('Wysoki')
           .setStyle(ButtonStyle.Danger)
           .setEmoji('🔴')
       );
