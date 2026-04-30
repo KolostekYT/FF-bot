@@ -129,23 +129,71 @@ const createTicketHandler = {
         });
       }
       
-      const modal = new ModalBuilder()
-        .setCustomId('create_ticket_modal')
-        .setTitle('Create a Ticket');
+      const createTicketHandler = {
+  name: 'create_ticket',
+  async execute(interaction, client) {
+    try {
+      if (!(await ensureGuildContext(interaction))) return;
 
-      const reasonInput = new TextInputBuilder()
-        .setCustomId('reason')
-        .setLabel('Why are you creating this ticket?')
-        .setStyle(TextInputStyle.Paragraph)
-        .setPlaceholder('Describe your issue...')
-        .setRequired(true)
-        .setMaxLength(1000);
+      const rateLimitKey = `${interaction.user.id}:create_ticket`;
+      const allowed = await checkRateLimit(rateLimitKey, 3, 60000);
+      if (!allowed) {
+        return await interaction.reply({
+          embeds: [errorEmbed('Rate Limited', 'You are creating tickets too quickly. Please wait a minute.')],
+          flags: MessageFlags.Ephemeral
+        });
+      }
 
-      const actionRow = new ActionRowBuilder().addComponents(reasonInput);
-      modal.addComponents(actionRow);
-      
-      // showModal must be called directly without defer
-      await interaction.showModal(modal);
+      const config = await getGuildConfig(client, interaction.guildId);
+      const maxTicketsPerUser = config.maxTicketsPerUser || 3;
+
+      const { getUserTicketCount } = await import('../services/ticket.js');
+      const currentTicketCount = await getUserTicketCount(interaction.guildId, interaction.user.id);
+
+      if (currentTicketCount >= maxTicketsPerUser) {
+        return await interaction.reply({
+          embeds: [
+            errorEmbed(
+              '🎫 Ticket Limit Reached',
+              `You have reached the maximum number of open tickets (${maxTicketsPerUser}).`
+            )
+          ],
+          flags: MessageFlags.Ephemeral
+        });
+      }
+
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+      const categoryId = config.ticketCategoryId || null;
+
+      const result = await createTicket(
+        interaction.guild,
+        interaction.member,
+        categoryId // ❗ bez reason
+      );
+
+      if (result.success) {
+        await interaction.editReply({
+          embeds: [successEmbed('Ticket Created', `Your ticket has been created in ${result.channel}!`)]
+        });
+      } else {
+        await interaction.editReply({
+          embeds: [errorEmbed('Error', result.error || 'Failed to create ticket.')]
+        });
+      }
+
+    } catch (error) {
+      logger.error('Error creating ticket:', error);
+
+      if (!interaction.replied && !interaction.deferred) {
+        await interaction.reply({
+          embeds: [errorEmbed('Error', 'Could not create ticket.')],
+          flags: MessageFlags.Ephemeral
+        });
+      }
+    }
+  }
+};
     } catch (error) {
       logger.error('Error creating ticket modal:', error);
       if (!interaction.replied && !interaction.deferred) {
