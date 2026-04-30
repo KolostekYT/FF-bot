@@ -69,7 +69,7 @@ export async function getUserTicketCount(guildId, userId) {
   }
 }
 
-export async function createTicket(guild, member, categoryId, reason = 'No reason provided', priority = 'none') {
+export async function createTicket(guild, member, categoryId = priority = 'none') {
   try {
     const config = await getGuildConfig(guild.client, guild.id);
     const ticketConfig = config.tickets || {};
@@ -153,7 +153,6 @@ export async function createTicket(guild, member, categoryId, reason = 'No reaso
       status: 'open',
       claimedBy: null,
       priority: priority || 'none',
-      reason,
     };
     
     await saveTicketData(guild.id, channel.id, ticketData);
@@ -162,7 +161,7 @@ export async function createTicket(guild, member, categoryId, reason = 'No reaso
     
     const embed = createEmbed({
       title: `Ticket #${ticketNumber}`,
-      description: `${member.toString()}, thanks for creating a ticket!\n\n**Reason:** ${reason}\n**Priority:** ${priorityInfo.emoji} ${priorityInfo.label}`,
+      description: `${member.toString()}, Dziękujemy za stworzenie aplikacji! Aby aplikawać wypełnij te informację = Imię - (twoje Imię) Wiek - (twój aktualny wiek) od kiedy grasz - (ss ze steama ile masz h w albionie) fame - (ss z albiona ile masz fame) Dlaczego postanowiłeś do nas aplikować - (twój powód do aplikacji do nas) \n**Priority:** ${priorityInfo.emoji} ${priorityInfo.label}`,
       color: priorityInfo.color,
       fields: [
         { name: 'Status', value: '🟢 Open', inline: true },
@@ -224,7 +223,6 @@ export async function createTicket(guild, member, categoryId, reason = 'No reaso
         ticketNumber: ticketNumber,
         userId: member.id,
         executorId: member.id,
-        reason: reason,
         priority: priority || 'none',
         metadata: {
           channelId: channel.id,
@@ -257,7 +255,7 @@ export async function createTicket(guild, member, categoryId, reason = 'No reaso
   }
 }
 
-export async function closeTicket(channel, closer, reason = 'No reason provided') {
+export async function closeTicket(channel, closer) {
   try {
     const ticketData = await getTicketData(channel.guild.id, channel.id);
     if (!ticketData) {
@@ -272,7 +270,6 @@ export async function closeTicket(channel, closer, reason = 'No reason provided'
     ticketData.status = 'closed';
     ticketData.closedBy = closer.id;
     ticketData.closedAt = new Date().toISOString();
-    ticketData.closeReason = reason;
     
     await saveTicketData(channel.guild.id, channel.id, ticketData);
 
@@ -298,7 +295,7 @@ export async function closeTicket(channel, closer, reason = 'No reason provided'
         if (ticketCreator) {
           const dmEmbed = createEmbed({
             title: '🎫 Your Ticket Has Been Closed',
-            description: `Your ticket **${channel.name}** has been closed.\n\n**Reason:** ${reason}\n**Closed by:** ${closer.tag}\n**Closed at:** <t:${Math.floor(Date.now() / 1000)}:F>\n\nThank you for using our support system! If you have any further questions, feel free to create a new ticket.`,
+            description: `Your ticket **${channel.name}** has been closed.\n**Closed by:** ${closer.tag}\n**Closed at:** <t:${Math.floor(Date.now() / 1000)}:F>\n\nThank you for using our support system! If you have any further questions, feel free to create a new ticket.`,
             color: '#e74c3c',
             footer: { text: `Ticket ID: ${ticketData.id}` }
           });
@@ -394,7 +391,7 @@ components: []
     
     const closeEmbed = createEmbed({
       title: 'Ticket Closed',
-      description: `This ticket has been closed by ${closer}.\n**Reason:** ${reason}${dmOnClose ? '\n\n📩 A DM has been sent to the ticket creator.' : ''}`,
+      description: `This ticket has been closed by ${closer}. \n${dmOnClose ? '\n\n📩 A DM has been sent to the ticket creator.' : ''}`,
       color: '#e74c3c',
       footer: { text: `Ticket ID: ${ticketData.id}` }
     });
@@ -423,7 +420,6 @@ components: []
         ticketNumber: ticketData.id,
         userId: ticketData.userId,
         executorId: closer.id,
-        reason: reason,
         metadata: {
           dmSent: dmOnClose,
           closedAt: ticketData.closedAt,
@@ -602,7 +598,6 @@ export async function reopenTicket(channel, reopener) {
     ticketData.status = 'open';
     ticketData.closedBy = null;
     ticketData.closedAt = null;
-    ticketData.closeReason = null;
     
     await saveTicketData(channel.guild.id, channel.id, ticketData);
 
