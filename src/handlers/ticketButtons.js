@@ -206,48 +206,6 @@ const createTicketHandler = {
   }
 };
 
-const createTicketModalHandler = {
-  name: 'create_ticket_modal',
-  async execute(interaction, client) {
-    try {
-      if (!(await ensureGuildContext(interaction))) return;
-
-      const deferSuccess = await InteractionHelper.safeDefer(interaction, { flags: MessageFlags.Ephemeral });
-      if (!deferSuccess) return;
-      
-      const reason = interaction.fields.getTextInputValue('reason');
-      const config = await getGuildConfig(client, interaction.guildId);
-      const categoryId = config.ticketCategoryId || null;
-      
-      const result = await createTicket(
-        interaction.guild,
-        interaction.member,
-        categoryId,
-        reason
-      );
-      
-      if (result.success) {
-        await interaction.editReply({
-          embeds: [successEmbed(
-            'Ticket Created',
-            `Your ticket has been created in ${result.channel}!`
-          )]
-        });
-      } else {
-        await interaction.editReply({
-          embeds: [errorEmbed('Error', result.error || 'Failed to create ticket.')],
-          flags: MessageFlags.Ephemeral
-        });
-      }
-    } catch (error) {
-      logger.error('Error creating ticket:', error);
-      await interaction.editReply({
-        embeds: [errorEmbed('Error', 'An error occurred while creating your ticket.')],
-        flags: MessageFlags.Ephemeral
-      });
-    }
-  }
-};
 
 const closeTicketHandler = {
   name: 'ticket_close',
@@ -791,8 +749,7 @@ const deleteTicketHandler = {
 };
 
 export default createTicketHandler;
-export { 
-  createTicketModalHandler, 
+export {  
   closeTicketModalHandler,
   closeTicketHandler, 
   claimTicketHandler, 
