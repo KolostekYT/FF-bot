@@ -69,7 +69,7 @@ export async function getUserTicketCount(guildId, userId) {
   }
 }
 
-export async function createTicket(guild, member, categoryId, priority = 'none') {
+export async function createTicket(guild, member, categoryId, reason = 'No reason provided', priority = 'none') {
   try {
     const config = await getGuildConfig(guild.client, guild.id);
     const ticketConfig = config.tickets || {};
@@ -162,7 +162,7 @@ export async function createTicket(guild, member, categoryId, priority = 'none')
     
     const embed = createEmbed({
       title: `Ticket #${ticketNumber}`,
-      description: `${member.toString()}, dziękujemy za utworzenie zgłoszenia! Aby Aplikowac wypełnij: Imię - (Twoje imię) Wiek - (Twój wiek) Od kiedy grasz w albiona - (Twój czas spędzony w grze może być ss ze steama) Fame - (ss aktualnej ilości fame) Dlaczego chcesz do nas dołączyć - (dlaczego chcesz dołączyć do nas) \n\n**Priority:** ${priorityInfo.emoji} ${priorityInfo.label}`,
+      description: `${member.toString()}, thanks for creating a ticket!\n\n**Reason:** ${reason}\n**Priority:** ${priorityInfo.emoji} ${priorityInfo.label}`,
       color: priorityInfo.color,
       fields: [
         { name: 'Status', value: '🟢 Open', inline: true },
@@ -257,7 +257,7 @@ export async function createTicket(guild, member, categoryId, priority = 'none')
   }
 }
 
-export async function createTicket(guild, member, categoryId, priority = 'none') {
+export async function closeTicket(channel, closer, reason = 'No reason provided') {
   try {
     const ticketData = await getTicketData(channel.guild.id, channel.id);
     if (!ticketData) {
@@ -1240,6 +1240,5 @@ export async function updateTicketPriority(channel, priority, updater) {
     };
   }
 }
-
 
 
